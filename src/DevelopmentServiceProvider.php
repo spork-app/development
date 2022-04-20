@@ -14,9 +14,6 @@ class DevelopmentServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // $this->app->singleton('spork.development', function ($app) {
-        //     return new Development($app['spork.config']);
-        // });
         Spork::addFeature('Development', 'CodeIcon', '/dev');
         if (config('spork.development.enabled')) {
             Route::middleware($this->app->make('config')->get('spork.development.middleware', ['web', 'auth:sanctum']))
