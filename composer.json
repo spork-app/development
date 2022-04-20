@@ -1,0 +1,18 @@
+{
+    "name": "spork/development",
+    "description": "A plugin meant for developing things!",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Austin Kregel",
+            "email": "5355937+austinkregel@users.noreply.github.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Spork\\Development\\": "src/"
+        }
+    }
+}
