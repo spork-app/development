@@ -14,5 +14,13 @@
         "psr-4": {
             "Spork\\Development\\": "src/"
         }
-    }
+    },
+    "keywords": ["spork-app", "spork-plugin"],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Spork\\Development\\DevelopmentServiceProvider"
+            ]
+        }
+    }    
 }
