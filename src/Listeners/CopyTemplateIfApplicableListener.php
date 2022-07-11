@@ -9,13 +9,14 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Str;
 
-class CopyTemplateIfApplicableListener // implements ShouldQueue
+class CopyTemplateIfApplicableListener //implements ShouldQueue
 {
     public function __invoke($event) 
     {
         $feature = $event->featureList;
 
         if ($feature->feature !== 'development') {
+            info("feature isnt development", compact('feature'));
             return;
         }
 
@@ -27,12 +28,14 @@ class CopyTemplateIfApplicableListener // implements ShouldQueue
         }
 
         $template = $feature->settings['template'];
+        info("Building from template", compact('template'));
 
         $this->fetchTemplate($template, $path);
         $this->replaceTemplatePlaceholders($event->featureList, $template, $path);
 
         if ($feature->settings['use_git']) {
-            (new Process(['git', 'init'], $path))->run();
+            $status = (new Process(['git', 'init'], $path))->run();
+            info('Git init status', compact('status'));
         }
     }
 
@@ -51,7 +54,9 @@ class CopyTemplateIfApplicableListener // implements ShouldQueue
     protected function fetchRemoteTemplate($template, $destinationPath)
     {
         $destination = str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789').'.zip';
+        info('Fetching template '. $template['src']);
         file_put_contents($absolutePath = storage_path($destination), file_get_contents($template['src']));
+        info('File saved '. $absolutePath);
 
         $this->unzip($absolutePath, $destinationPath);
     }
@@ -68,41 +73,41 @@ class CopyTemplateIfApplicableListener // implements ShouldQueue
     {
         $zip = new \ZipArchive;
         $res = $zip->open($path);
-        if ($res === TRUE) {
-            $errors = [];
-            for ($i = 0; $i < $zip -> numFiles; $i++) {
-                $RETVAL = false;
-        
-                $filename = $zip->getNameIndex($i);
-        
-                $RETVAL = $zip->extractTo($unzipDir, $filename);
-        
-                if (!$RETVAL) {
-                    $errors[] = "$filename: $RETVAL";
-                }
-            }
-            $close = $zip->close();
-
-            info(sprintf('Unzipped %s to %s', $path, $unzipDir), [
-                'errors' => $errors,
-            ]);
-            if (!file_exists($unzipDir)) {
-                throw new \Exception('Unable to unzip ' . $path);
-            }
-
-            $dirs = scandir($unzipDir);
-
-            if (count($dirs) == 3) {
-                $destination = array_slice($dirs, 2)[0];
-
-                rename($unzipDir . '/' . $destination, $unzipDir.'/../temp-dir');
-                rename($unzipDir . '/../' . 'temp-dir', $unzipDir);
-            }
-
-            unlink($path);
-        } else {
+        if ($res !== TRUE) {
             throw new \Exception('Unable to unzip template.');
+        } 
+
+        $errors = [];
+        for ($i = 0; $i < $zip -> numFiles; $i++) {
+            $RETVAL = false;
+    
+            $filename = $zip->getNameIndex($i);
+    
+            $RETVAL = $zip->extractTo($unzipDir, $filename);
+    
+            if (!$RETVAL) {
+                $errors[] = "$filename: $RETVAL";
+            }
         }
+        $close = $zip->close();
+
+        info(sprintf('Unzipped %s to %s', $path, $unzipDir), [
+            'errors' => $errors,
+        ]);
+        if (!file_exists($unzipDir)) {
+            throw new \Exception('Unable to unzip ' . $path);
+        }
+
+        $dirs = scandir($unzipDir);
+
+        if (count($dirs) == 3) {
+            $destination = array_slice($dirs, 2)[0];
+
+            rename($unzipDir . '/' . $destination, $unzipDir.'/../temp-dir');
+            rename($unzipDir . '/../' . 'temp-dir', $unzipDir);
+        }
+
+        unlink($path);
     }
 
     protected function replaceTemplatePlaceholders($feature, $template, $path)
@@ -110,6 +115,7 @@ class CopyTemplateIfApplicableListener // implements ShouldQueue
         $filesystem = new Filesystem;
 
         if (!file_exists($path.'/spork.json')) {
+            info("This repo doesnt have a spork.json file");
             return;
         }
 
@@ -143,6 +149,7 @@ class CopyTemplateIfApplicableListener // implements ShouldQueue
 
             file_put_contents($file->getPathname(), $contents);
         }
+        info('placeholders replaced');
     }
 }
 
