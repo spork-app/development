@@ -1,12 +1,18 @@
 <?php
 namespace Spork\Development;
 
-use App\Spork;
+use Spork\Core\Spork;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class DevelopmentServiceProvider extends ServiceProvider
 {
+
+    public function boot() 
+    {
+        // Spork::fabricateWith(__DIR__.'/../resources/Development/parts');
+    }
+
     /**
      * Register the service provider.
      *
@@ -14,7 +20,7 @@ class DevelopmentServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        Spork::addFeature('Development', 'CodeIcon', '/dev', 'tool');
+        Spork::addFeature('Development', 'CodeIcon', '/dev', 'tool', ['development']);
         if (config('spork.development.enabled')) {
             Route::middleware($this->app->make('config')->get('spork.development.middleware', ['web', 'auth:sanctum']))
                 ->prefix('api')
