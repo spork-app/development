@@ -193,7 +193,8 @@ Spork.setupStore({
     Development: require("./store").default,
 })
 
-Spork.routesFor('maintenance', [
+Spork.routesFor('development', [ 
+    Spork.authenticatedRoute('/fabricator', require('./Development/Fabricator').default),
     Spork.authenticatedRoute('/dev', require('./Development/Development').default, {
         children: [
             Spork.authenticatedRoute(':project?', require('./Development/Editor').default)
