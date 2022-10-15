@@ -2,7 +2,7 @@
 
 namespace Spork\Development\Events;
 
-use App\Models\FeatureList;
+use Spork\Core\Models\FeatureList;
 use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

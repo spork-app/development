@@ -2,7 +2,7 @@
 
 namespace Spork\Development\Events;
 
-use App\Models\FeatureList;
+use Spork\Core\Models\FeatureList;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 

@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\FeatureList;
+use Spork\Core\Models\FeatureList;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Route;
 use Spork\Development\Events\FileSavedEvent;
