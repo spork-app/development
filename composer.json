@@ -17,12 +17,30 @@
             "Spork\\Development\\": "src/"
         }
     },
-    "keywords": ["spork-app", "spork-plugin"],
+    "keywords": [
+        "spork-app",
+        "spork-plugin"
+    ],
     "extra": {
         "laravel": {
             "providers": [
                 "Spork\\Development\\DevelopmentServiceProvider"
             ]
         }
-    }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Spork\\Development\\Tests\\": "tests"
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^7.0"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "format": "vendor/bin/pint"
+    },
+    "homepage": "https://github.com/spork-app/core",
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
