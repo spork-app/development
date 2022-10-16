@@ -40,7 +40,7 @@
         "test": "vendor/bin/phpunit",
         "format": "vendor/bin/pint"
     },
-    "homepage": "https://github.com/spork-app/core",
+    "homepage": "https://github.com/spork-app/development",
     "minimum-stability": "dev",
     "prefer-stable": true
 }
