@@ -2,13 +2,13 @@
 
 namespace Spork\Development\Events;
 
-use Spork\Core\Models\FeatureList;
 use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Spork\Core\Models\FeatureList;
 
 class FileSavedEvent implements ShouldBroadcast
 {
@@ -23,7 +23,7 @@ class FileSavedEvent implements ShouldBroadcast
         public FeatureList $feature,
         public User $user,
         public $filePath
-    ){
+    ) {
         //
     }
 

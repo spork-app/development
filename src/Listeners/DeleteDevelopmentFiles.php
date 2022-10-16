@@ -2,11 +2,10 @@
 
 namespace Spork\Development\Listeners;
 
-use App\Events\FeatureDeleted;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Filesystem\Filesystem;
 
-class DeleteDevelopmentFiles// implements ShouldQueue
+class DeleteDevelopmentFiles // implements ShouldQueue
 {
     public function handle($event)
     {
@@ -18,8 +17,9 @@ class DeleteDevelopmentFiles// implements ShouldQueue
 
         $path = $feature->settings['path'];
 
-        if (!file_exists($path)) {
-            info('Template does not exist at ' . $path);
+        if (! file_exists($path)) {
+            info('Template does not exist at '.$path);
+
             return;
         }
 

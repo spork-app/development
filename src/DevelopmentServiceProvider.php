@@ -1,14 +1,14 @@
 <?php
+
 namespace Spork\Development;
 
-use Spork\Core\Spork;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Spork\Core\Spork;
 
 class DevelopmentServiceProvider extends ServiceProvider
 {
-
-    public function boot() 
+    public function boot()
     {
         // Spork::fabricateWith(__DIR__.'/../resources/Development/parts');
     }
@@ -24,7 +24,7 @@ class DevelopmentServiceProvider extends ServiceProvider
         if (config('spork.development.enabled')) {
             Route::middleware($this->app->make('config')->get('spork.development.middleware', ['web', 'auth:sanctum']))
                 ->prefix('api')
-                ->group(__DIR__ . '/../routes/api.php');
+                ->group(__DIR__.'/../routes/api.php');
         }
     }
 

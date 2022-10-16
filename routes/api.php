@@ -1,8 +1,8 @@
 <?php
 
-use Spork\Core\Models\FeatureList;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Route;
+use Spork\Core\Models\FeatureList;
 use Spork\Development\Events\FileSavedEvent;
 use Spork\Development\Events\RedeployRequested;
 
@@ -10,13 +10,13 @@ Route::post('files/{featureList:id}', function (FeatureList $featureList) {
     abort_unless(request()->has('path'), 404, 'No file found');
 
     abort_unless(request()->user()->tokenCan('create-file'), 403, 'You do not have permission to upload files');
-    
+
     $path = request()->get('path', $featureList->settings['path']);
 
     if (is_dir($path)) {
         $dirs = collect(scandir($path))->filter(function ($file) {
-            return !in_array($file, ['.', '..']);
-        })->map(fn($file) => [
+            return ! in_array($file, ['.', '..']);
+        })->map(fn ($file) => [
             'is_directory' => $isDirectory = is_dir($path.'/'.$file),
             'absolute' => md5($path.'/'.$file),
             'md5_content' => $isDirectory ? null : md5_file($path.'/'.$file),
@@ -43,10 +43,10 @@ Route::post('files/{featureList:id}', function (FeatureList $featureList) {
 
 Route::put('files/{featureList}', function (FeatureList $featureList) {
     abort_unless(request()->has('path'), 404, 'No file found');
-    
+
     $exists = file_exists($path = request()->get('path'));
 
-    if (!file_put_contents($path, request()->get('data'))) {
+    if (! file_put_contents($path, request()->get('data'))) {
         return response('Could not create file', 500);
     }
 
@@ -59,24 +59,25 @@ Route::put('files/{featureList}', function (FeatureList $featureList) {
 
 Route::post('files/{featureList}/create-directory', function (FeatureList $featureList, Filesystem $filesystem) {
     abort_if(file_exists($filePath = $featureList->settings['path'].'/'.request()->get('name')), 404, 'File found when we didn\'t expect it');
-    
+
     abort_unless(request()->user()->tokenCan('create-directory'), 403, 'You do not have permission to create directories');
 
     $parentDirectory = pathinfo($filePath, PATHINFO_DIRNAME);
-    if (!file_exists($parentDirectory)) {
+    if (! file_exists($parentDirectory)) {
         $filesystem->makeDirectory($parentDirectory, 0755, true);
     }
     $filesystem->makeDirectory($filePath, 0755, true);
+
     return response('', 204);
 });
 Route::post('files/{featureList}/create-file', function (FeatureList $featureList, Filesystem $filesystem) {
     abort_if(file_exists($filePath = $featureList->settings['path'].'/'.request()->get('name')), 404, 'File found when we didn\'t expect it');
-    
+
     abort_unless(request()->user()->tokenCan('create-file'), 403, 'You do not have permission to create files');
 
     $parentDirectory = pathinfo($filePath, PATHINFO_DIRNAME);
-    
-    if (!file_exists($parentDirectory)) {
+
+    if (! file_exists($parentDirectory)) {
         $filesystem->makeDirectory($parentDirectory, 0755, true);
     }
 

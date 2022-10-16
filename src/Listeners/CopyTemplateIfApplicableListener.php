@@ -2,33 +2,34 @@
 
 namespace Spork\Development\Listeners;
 
-use App\Events\FeatureCreated;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\Process\Process;
-use Illuminate\Support\Str;
 
 class CopyTemplateIfApplicableListener //implements ShouldQueue
 {
-    public function __invoke($event) 
+    public function __invoke($event)
     {
         $feature = $event->featureList;
 
         if ($feature->feature !== 'development') {
-            info("feature isnt development", compact('feature'));
+            info('feature isnt development', compact('feature'));
+
             return;
         }
 
         $path = $feature->settings['path'];
 
         if (file_exists($path)) {
-            info('Template already exists at ' . $path);
+            info('Template already exists at '.$path);
+
             return;
         }
 
         $template = $feature->settings['template'];
-        info("Building from template", compact('template'));
+        info('Building from template', compact('template'));
 
         $this->fetchTemplate($template, $path);
         $this->replaceTemplatePlaceholders($event->featureList, $template, $path);
@@ -39,7 +40,8 @@ class CopyTemplateIfApplicableListener //implements ShouldQueue
         }
     }
 
-    protected function fetchTemplate($template, $destinationPath) {
+    protected function fetchTemplate($template, $destinationPath)
+    {
         throw_unless(str_ends_with($template['src'], '.zip'), ValidationException::withMessages([
             'src' => ['The src must end with .zip'],
         ]));
@@ -54,9 +56,9 @@ class CopyTemplateIfApplicableListener //implements ShouldQueue
     protected function fetchRemoteTemplate($template, $destinationPath)
     {
         $destination = str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789').'.zip';
-        info('Fetching template '. $template['src']);
+        info('Fetching template '.$template['src']);
         file_put_contents($absolutePath = storage_path($destination), file_get_contents($template['src']));
-        info('File saved '. $absolutePath);
+        info('File saved '.$absolutePath);
 
         $this->unzip($absolutePath, $destinationPath);
     }
@@ -73,19 +75,19 @@ class CopyTemplateIfApplicableListener //implements ShouldQueue
     {
         $zip = new \ZipArchive;
         $res = $zip->open($path);
-        if ($res !== TRUE) {
+        if ($res !== true) {
             throw new \Exception('Unable to unzip template.');
-        } 
+        }
 
         $errors = [];
-        for ($i = 0; $i < $zip -> numFiles; $i++) {
+        for ($i = 0; $i < $zip->numFiles; $i++) {
             $RETVAL = false;
-    
+
             $filename = $zip->getNameIndex($i);
-    
+
             $RETVAL = $zip->extractTo($unzipDir, $filename);
-    
-            if (!$RETVAL) {
+
+            if (! $RETVAL) {
                 $errors[] = "$filename: $RETVAL";
             }
         }
@@ -94,8 +96,8 @@ class CopyTemplateIfApplicableListener //implements ShouldQueue
         info(sprintf('Unzipped %s to %s', $path, $unzipDir), [
             'errors' => $errors,
         ]);
-        if (!file_exists($unzipDir)) {
-            throw new \Exception('Unable to unzip ' . $path);
+        if (! file_exists($unzipDir)) {
+            throw new \Exception('Unable to unzip '.$path);
         }
 
         $dirs = scandir($unzipDir);
@@ -103,8 +105,8 @@ class CopyTemplateIfApplicableListener //implements ShouldQueue
         if (count($dirs) == 3) {
             $destination = array_slice($dirs, 2)[0];
 
-            rename($unzipDir . '/' . $destination, $unzipDir.'/../temp-dir');
-            rename($unzipDir . '/../' . 'temp-dir', $unzipDir);
+            rename($unzipDir.'/'.$destination, $unzipDir.'/../temp-dir');
+            rename($unzipDir.'/../'.'temp-dir', $unzipDir);
         }
 
         unlink($path);
@@ -114,23 +116,24 @@ class CopyTemplateIfApplicableListener //implements ShouldQueue
     {
         $filesystem = new Filesystem;
 
-        if (!file_exists($path.'/spork.json')) {
-            info("This repo doesnt have a spork.json file");
+        if (! file_exists($path.'/spork.json')) {
+            info('This repo doesnt have a spork.json file');
+
             return;
         }
 
         $sporkFile = json_decode(file_get_contents($path.'/spork.json'), true);
         unlink($path.'/spork.json');
         $values = [
-            "__PACKAGE_NAME__" => 'spork/'.Str::slug($feature->name),
-            "__DESCRIPTION__" => "A Spork Plugin",
-            "__NAMESPACE__" => 'Spork\\'.Str::studly($feature->name),
-            "__NAMESPACE_ESCAPED__" => 'Spork\\\\'.Str::studly($feature->name),
-            "__FEATURE_NAME__" =>  $feature->name,
-            "__CAPITAL_FEATURE_NAME__" => Str::studly($feature->name),
+            '__PACKAGE_NAME__' => 'spork/'.Str::slug($feature->name),
+            '__DESCRIPTION__' => 'A Spork Plugin',
+            '__NAMESPACE__' => 'Spork\\'.Str::studly($feature->name),
+            '__NAMESPACE_ESCAPED__' => 'Spork\\\\'.Str::studly($feature->name),
+            '__FEATURE_NAME__' => $feature->name,
+            '__CAPITAL_FEATURE_NAME__' => Str::studly($feature->name),
             '__FEATURE_NAME_SLUG__' => Str::slug($feature->name),
         ];
-        
+
         $allFiles = $filesystem->allFiles($path);
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
@@ -141,7 +144,7 @@ class CopyTemplateIfApplicableListener //implements ShouldQueue
                 if (empty($values[$key])) {
                     continue;
                 }
-                
+
                 $replaceValue = ($values[$key] ?? '');
 
                 $contents = str_replace($key, $replaceValue, $contents);
@@ -152,5 +155,3 @@ class CopyTemplateIfApplicableListener //implements ShouldQueue
         info('placeholders replaced');
     }
 }
-
-  

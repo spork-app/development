@@ -2,11 +2,11 @@
 
 namespace Spork\Development\Events;
 
-use Spork\Core\Models\FeatureList;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Spork\Core\Models\FeatureList;
 
-class PublishGitInformationRequested 
+class PublishGitInformationRequested
 {
     use Dispatchable, SerializesModels;
 
