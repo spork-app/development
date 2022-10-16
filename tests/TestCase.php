@@ -4,7 +4,7 @@ namespace Spork\Development\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as TestbenchTestCase;
-use Spork\Development\DevelopmentServiceProvider.php;
+use Spork\Development\DevelopmentServiceProvider;
 
 class TestCase extends TestbenchTestCase
 {
@@ -20,7 +20,7 @@ class TestCase extends TestbenchTestCase
     protected function getPackageProviders($app)
     {
         return [
-            DevelopmentServiceProvider.php::class,
+            DevelopmentServiceProvider::class,
         ];
     }
 }
