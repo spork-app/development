@@ -21,6 +21,7 @@ class DevelopmentServiceProvider extends ServiceProvider
     public function register()
     {
         Spork::addFeature('Development', 'CodeIcon', '/dev', 'tool', ['development']);
+        $this->mergeConfigFrom(__DIR__ . '/../config/spork.php', 'spork.development');
         if (config('spork.development.enabled')) {
             Route::middleware($this->app->make('config')->get('spork.development.middleware', ['web', 'auth:sanctum']))
                 ->prefix('api')

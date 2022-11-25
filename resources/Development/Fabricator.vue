@@ -3,31 +3,36 @@
         <KeepAlive>
             <div  class="w-full h-full border border-gray-100 flex flex-wrap text-white">
                 <div class="w-3/4 border border-gray-200">
-                    <draggable 
+                    <draggable
                         v-model="contents"
                         group="components"
                         class="p-8 border border-red-400 flex flex-wrap"
+                        :group="{ name: 'components', pull: 'move', put: true }"
                         item-key="id"
                     >
                         <template #item="{element}">
-                            <component 
-                                :is="element.name" 
+                            <component
+                                v-if="element.component"
+                                :is="element.component"
                                 :class="element.width"
                             ></component>
+                            <div v-else>{{ element}}</div>
                         </template>
                     </draggable>
                 </div>
                 <div class="w-1/4 border border-gray-300">
 
-                    <draggable 
+                    <draggable
                         :list="components"
-                        class="p-8 border border-red-400" 
+                        class="p-8 border border-red-400"
                         :group="{ name: 'components', pull: 'clone', put: false }"
                         item-key="id"
+                        :sort="true"
+
                     >
                         <template #item="{ element }">
-                            <div>
-                                <div class="flex flex-col">
+                            <div class="border-t border-gray-400 dark:border-gray-500">
+                                <div class="flex flex-col my-4">
                                     <div class="font-bold">{{ element.name }}</div>
                                     <div>{{ element.description }}</div>
                                 </div>
@@ -42,7 +47,7 @@
 
 <script>
 /**
- * Fabricator will be a plugin focused on dynamic page creation. 
+ * Fabricator will be a plugin focused on dynamic page creation.
  *   It'll generate a vue component to be used for new routes.
  *   It'll have a drag and drop GUI for building out the component, filling static information, and setting the route path.
  *      Meaning, I want it to have a set of Vue components it can have a preview of, and then I can drag and drop them into the page.
@@ -58,7 +63,36 @@ export default {
         return {
             draggingComponent: false,
             draggingContent: false,
-            components: Spork.fabrications,
+            components: [
+                {
+                    id: 1,
+                    name: 'Calendar',
+                    description: "A calendar for selecting inputs",
+                    type: 'calendar',
+                    settings: {},
+                },
+                {
+                    id: 2,
+                    name: 'Input',
+                    description: "An input",
+                    type: 'text',
+                    settings: {},
+                },
+                {
+                    id: 3,
+                    name: 'Input',
+                    description: "An input",
+                    type: 'textarea',
+                    settings: {},
+                },
+                {
+                    id: 4,
+                    name: 'Number Input',
+                    description: "A number input",
+                    type: 'number',
+                    settings: {},
+                }
+            ],
             contents: [],
         }
     }
